@@ -47,7 +47,6 @@ namespace HomeExercises
 		[TestCase(10, 2, true, "1.2", ExpectedResult = true)]
 		[TestCase(10, 2, true, "1.23", ExpectedResult = true)]
 		[TestCase(10, 2, true, "1.234", ExpectedResult = false)]
-
 		public bool ScaleInGeneral(int a, int b, bool flag, string number)
 		{
 			return new NumberValidator(a, b, flag).IsValidNumber(number);
