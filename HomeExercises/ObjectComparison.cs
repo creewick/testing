@@ -1,5 +1,4 @@
 using FluentAssertions;
-using FluentAssertions.Common;
 using NUnit.Framework;
 
 namespace HomeExercises
@@ -16,21 +15,21 @@ namespace HomeExercises
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
-		    expectedTsar.ShouldBeEquivalentTo(actualTsar, options => options
-		        .Excluding(o => o.SelectedMemberPath.EndsWith("Id")));
+			expectedTsar.ShouldBeEquivalentTo(actualTsar, options => options
+				.Excluding(o => o.SelectedMemberPath.EndsWith("Id")));
 		}
 
 		[Test]
 		[Description("Альтернативное решение. Какие у него недостатки?")]
 		// Проблема: при добавлении полей в Person, метод AreEqual придется каждый раз переписывать
-        	// Можно случайно забыть, а тест будет зеленый
-        	public void CheckCurrentTsar_WithCustomEquality()
+		// Можно случайно забыть, а тест будет зеленый
+		public void CheckCurrentTsar_WithCustomEquality()
 		{
 			var actualTsar = TsarRegistry.GetCurrentTsar();
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 			new Person("Vasili III of Russia", 28, 170, 60, null));
-            
-		    AreEqual(actualTsar, expectedTsar).Should().BeTrue();
+
+			AreEqual(actualTsar, expectedTsar).Should().BeTrue();
 		}
 
 		private bool AreEqual(Person actual, Person expected)
