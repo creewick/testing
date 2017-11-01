@@ -1,4 +1,5 @@
-using FluentAssertions;
+﻿using FluentAssertions;
+using FluentAssertions.Common;
 using NUnit.Framework;
 
 namespace HomeExercises
@@ -15,21 +16,31 @@ namespace HomeExercises
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
-			expectedTsar.ShouldBeEquivalentTo(actualTsar, options => options
-				.Excluding(o => o.SelectedMemberPath.EndsWith("Id")));
+		    var expectedPerson = expectedTsar;
+		    var actualPerson = actualTsar;
+            
+            // Мы не будем проверять ID и не будем проверять всех предков
+		    expectedPerson.ShouldBeEquivalentTo(actualPerson, options => options
+		        .Excluding(o => o.Id)
+		        .Excluding(o => o.Parent.Id)
+                .Excluding(o => o.Parent.Parent)
+		    );
 		}
 
 		[Test]
 		[Description("Альтернативное решение. Какие у него недостатки?")]
-		// Проблема: при добавлении полей в Person, метод AreEqual придется каждый раз переписывать
-		// Можно случайно забыть, а тест будет зеленый
-		public void CheckCurrentTsar_WithCustomEquality()
+        // Проблема: Синхронизация между кодом и тестом. При дополнении поля в класс, 
+        //   проверку для этого поля в тесты придется добавлять вручную.
+        //   Если забыть и окажется, что в новом коде ошибка, то тест будет зеленый
+        // Проблема: Рекурсивный вызов. Может возникнуть переполнение стека вызовов.
+        //   При этом окажется, что код верный, а тест падает
+        public void CheckCurrentTsar_WithCustomEquality()
 		{
 			var actualTsar = TsarRegistry.GetCurrentTsar();
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 			new Person("Vasili III of Russia", 28, 170, 60, null));
-
-			AreEqual(actualTsar, expectedTsar).Should().BeTrue();
+            
+		    AreEqual(actualTsar, expectedTsar).Should().BeTrue();
 		}
 
 		private bool AreEqual(Person actual, Person expected)
