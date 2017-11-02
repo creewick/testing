@@ -1,5 +1,7 @@
-﻿using FluentAssertions;
+﻿using System;
+using FluentAssertions;
 using FluentAssertions.Common;
+using FluentAssertions.Equivalency;
 using NUnit.Framework;
 
 namespace HomeExercises
@@ -14,16 +16,11 @@ namespace HomeExercises
 			var actualTsar = TsarRegistry.GetCurrentTsar();
 
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
-				new Person("Vasili III of Russia", 28, 170, 60, null));
+				new Person("Vasili III of Russia", 28, 170, 60, null, 1), 1);
 
-		    var expectedPerson = expectedTsar;
-		    var actualPerson = actualTsar;
-            
-            // Мы не будем проверять ID и не будем проверять всех предков
-		    expectedPerson.ShouldBeEquivalentTo(actualPerson, options => options
-		        .Excluding(o => o.Id)
-		        .Excluding(o => o.Parent.Id)
-                .Excluding(o => o.Parent.Parent)
+		    expectedTsar.ShouldBeEquivalentTo(actualTsar, options => options
+		        .Excluding(info => info.SelectedMemberInfo.Name == "Id" &&
+								   info.SelectedMemberInfo.DeclaringType == typeof(Person))
 		    );
 		}
 
@@ -38,7 +35,7 @@ namespace HomeExercises
 		{
 			var actualTsar = TsarRegistry.GetCurrentTsar();
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
-			new Person("Vasili III of Russia", 28, 170, 60, null));
+			new Person("Vasili III of Russia", 28, 170, 60, null, 1), 1);
             
 		    AreEqual(actualTsar, expectedTsar).Should().BeTrue();
 		}
@@ -62,7 +59,7 @@ namespace HomeExercises
 		{
 			return new Person(
 				"Ivan IV The Terrible", 54, 170, 70,
-				new Person("Vasili III of Russia", 28, 170, 60, null));
+				new Person("Vasili III of Russia", 28, 170, 60, null, 1), 1);
 		}
 	}
 
@@ -73,15 +70,22 @@ namespace HomeExercises
 		public string Name;
 		public Person Parent;
 		public int Id;
+		public Job Job;
 
-		public Person(string name, int age, int height, int weight, Person parent)
+		public Person(string name, int age, int height, int weight, Person parent, int jobId)
 		{
 			Id = IdCounter++;
+			Job = new Job {Id = jobId};
 			Name = name;
 			Age = age;
 			Height = height;
 			Weight = weight;
 			Parent = parent;
 		}
+	}
+
+	public class Job
+	{
+		public int Id;
 	}
 }
