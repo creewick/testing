@@ -8,13 +8,19 @@ namespace HomeExercises
 {
 	public class ObjectComparison
 	{
+		private Person actualTsar;
+
+		[SetUp]
+		public void SetUp()
+		{
+			actualTsar = TsarRegistry.GetCurrentTsar();
+		}
 		[Test]
 		[Description("Проверка текущего царя")]
 		[Category("ToRefactor")]
 		public void CheckCurrentTsar()
 		{
-			var actualTsar = TsarRegistry.GetCurrentTsar();
-
+			//Это решение
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null, 1), 1);
 
@@ -22,6 +28,30 @@ namespace HomeExercises
 		        .Excluding(info => info.SelectedMemberInfo.Name == "Id" &&
 								   info.SelectedMemberInfo.DeclaringType == typeof(Person))
 		    );
+		}
+
+		[Test]
+		public void CheckIf_DifferentJobId()
+		{
+			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
+				new Person("Vasili III of Russia", 28, 170, 60, null, 1), 2);
+			
+			expectedTsar.ShouldBeEquivalentTo(actualTsar, options => options
+				.Excluding(info => info.SelectedMemberInfo.Name == "Id" &&
+				                   info.SelectedMemberInfo.DeclaringType == typeof(Person))
+			);
+		}
+
+		[Test]
+		public void CheckIf_DifferentParentJobId()
+		{
+			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
+				new Person("Vasili III of Russia", 28, 170, 60, null, 2), 1);
+
+			expectedTsar.ShouldBeEquivalentTo(actualTsar, options => options
+				.Excluding(info => info.SelectedMemberInfo.Name == "Id" &&
+				                   info.SelectedMemberInfo.DeclaringType == typeof(Person))
+			);
 		}
 
 		[Test]
